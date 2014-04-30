@@ -1,5 +1,6 @@
 import sqlite3 as lite
 import csv
+import data.database as db
 
 def initialise_database(data_dir = "../data/"):
     # issue:
@@ -14,13 +15,14 @@ def initialise_database(data_dir = "../data/"):
     stem = "fft_gs_mar24_"
     stem2 = "us_"
 
-    con = lite.connect(data_dir + 'train.db')
-    cur = con.cursor()
+    cur, con = db.connect(data_dir)
 
     cur.executescript("""
-    DROP TABLE IF EXISTS fft;
+    DROP TABLE IF EXISTS samples;
+    DROP TABLE IF EXISTS test_samples;
     DROP TABLE IF EXISTS tests;
-    CREATE TABLE fft (test_id INTEGER, part INTEGER, freq REAL, x REAL, y REAL, z REAL, UNIQUE(test_id, part, freq) ON CONFLICT REPLACE);
+    CREATE TABLE samples (sample_id INTEGER, freq REAL, x REAL, y REAL, z REAL, UNIQUE(sample_id, freq) ON CONFLICT REPLACE);
+    CREATE TABLE test_samples (sample_id INTEGER PRIMARY KEY, test_id INTEGER, part INTEGER);
     CREATE TABLE tests (test_id INTEGER PRIMARY KEY ASC, unloaded INTEGER, issue INTEGER, pulse_width TEXT);
     INSERT INTO tests (unloaded, issue, pulse_width) VALUES (1, 0, "1600us");
     INSERT INTO tests (unloaded, issue, pulse_width) VALUES (1, 1, "1600us");
@@ -69,14 +71,17 @@ def initialise_database(data_dir = "../data/"):
         unloaded_string = loaded[test[1]]
         issue_string = issues[test[2]]
         test_id = test[3]
-        for part in range(0, 9):
+        for part in range(0, 10):
             filename = data_dir + "fft/" + stem + pulse_width_string + "_" + unloaded_string + "_" + issue_string + str(part) + ".csv"
+            sample_id = (test_id - 1) * 10 + part
+            insert_statement = 'INSERT INTO test_samples (sample_id, test_id, part) VALUES (%s, %s, %s);' % (sample_id, test_id, part)
+            cur.execute(insert_statement)
             with open (filename, 'r') as fftfile:
                 fftreader = csv.reader(fftfile)
                 fftreader.next()
                 for row in fftreader:                
-                    insert_statement = 'INSERT INTO fft (test_id, part, freq, x, y, z) VALUES (%s, %s, %s, %s, %s, %s);' % (test_id, part, row[0], float(row[1]), float(row[2]), float(row[3]))
+                    insert_statement = 'INSERT INTO samples (sample_id, freq, x, y, z) VALUES (%s, %s, %s, %s, %s);' % (sample_id, row[0], float(row[1]), float(row[2]), float(row[3]))
                     cur.execute(insert_statement)
 
     con.commit()                
-    con.close()
+    db.disconnect()
