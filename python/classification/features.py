@@ -6,11 +6,12 @@
 import numpy
 import operator
 import random
+import matplotlib.pyplot as plt
 
 def histogram(data, bins):
     freq = data[:,0]
     Z = data[:,3]
-    H = asarray(hist(Z,bins,(freq[0],freq[-1])))
+    H = numpy.asarray(plt.hist(Z,bins,(freq[0],freq[-1])))
     H[0] = 1.0*H[0]/sum(H[0])
     return H[0]
 

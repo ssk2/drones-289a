@@ -19,9 +19,8 @@ def get_sample_indices (training_samples, testing_samples, data_dir = "../data/"
 def get_sample_data (sample_ids, data_dir = "../data/"):
     cur, con = db.connect(data_dir)
     sample_data = []
-    # Get sample data and classification
     for sample_id in sample_ids:
-        class_statement = 'SELECT issue > 0 FROM test_samples JOIN tests on test_samples.test_id = tests.test_id WHERE sample_id = %s;' % str(sample_id)
+        class_statement = 'SELECT issue  FROM test_samples JOIN tests on test_samples.test_id = tests.test_id WHERE sample_id = %s;' % str(sample_id)
         cur.execute(class_statement)
         sample_class = cur.fetchone()[0]
         sample_statement = 'SELECT freq, x, y, z FROM samples WHERE sample_id = %s;' % str(sample_id)
