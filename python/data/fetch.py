@@ -36,8 +36,7 @@ def get_sample_data (sample_ids, data_dir = "../data/"):
             row_index += 1
         sample_data.append((sample_class, sample_pulse_width, data))
     db.disconnect()
-    sample_data.sort()
-    return sample_data
+    return sorted(sample_data, key=lambda class_pulse_width: str(sample_class) + str(sample_pulse_width))
 
 def get_sample_indices_by_issue (data_dir, issue="> -1"):
     cur, con = db.connect(data_dir)
@@ -65,10 +64,8 @@ def get_sample_indices_for_crossvalidation (folds, data_dir = "../data/"):
     fold_ids = []
 
     for i in range(folds):
-        fold_test_ids = class_0_sample_ids[i*class_0_fold_size : (i+1) * class_0_fold_size]
+        fold_test_ids = class_0_sample_ids[i*class_0_fold_size : (i+1) * class_0_fold_size] + class_1_sample_ids[i*class_1_fold_size : (i+1) * class_1_fold_size]
         fold_train_ids = [ i for i in class_0_sample_ids if i not in fold_test_ids]
-        # We use class_0_fold_size here so that we're drawing the same amount from each test sset
-        fold_test_ids.extend (class_1_sample_ids[i*class_1_fold_size : (i+1) * class_1_fold_size])
-        fold_train_ids.extend([ i for i in class_1_sample_ids if i not in fold_test_ids])
+        fold_train_ids = fold_train_ids + [ i for i in class_1_sample_ids if i not in fold_test_ids]
         fold_ids.append((fold_train_ids, fold_test_ids))
     return fold_ids
