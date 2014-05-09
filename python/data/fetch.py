@@ -18,9 +18,9 @@ def get_sample_indices (training_samples, data_dir = "../data/"):
     return (training_indices, test_indices)
 
 
-def get_sample_indices_filtered(pulse_width='%', issue='%', loaded='%', data_dir = "../data/"):
+def get_sample_indices_filtered(pulse_width='%', issue='%', unloaded='%', data_dir = "../data/"):
     cur, con = db.connect(data_dir)
-    sample_id_statement = 'SELECT sample_id FROM test_samples JOIN tests ON test_samples.test_id = tests.test_id WHERE pulse_width LIKE "{0}" AND issue LIKE "{1}" AND unloaded LIKE "{2}"'.format(pulse_width, issue, loaded)
+    sample_id_statement = 'SELECT sample_id FROM test_samples JOIN tests ON test_samples.test_id = tests.test_id WHERE pulse_width LIKE "{0}" AND issue LIKE "{1}" AND unloaded LIKE "{2}"'.format(pulse_width, issue, unloaded)
     cur.execute(sample_id_statement)
     rows = cur.fetchall()
     sample_ids = []
