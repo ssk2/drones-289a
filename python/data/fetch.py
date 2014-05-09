@@ -1,11 +1,12 @@
 import sqlite3 as lite
 import data.database as db
-import random as rnd
+from random import shuffle
 import numpy as np
 
 def get_number_of_samples (data_dir):
     cur, con = db.connect(data_dir)
-    cur.execute('SELECT COUNT(*) FROM test_samples;')
+    select_statement = 'SELECT COUNT(*) FROM test_samples;'
+    cur.execute(select_statement)
     max_index = cur.fetchone()[0]
     db.disconnect()
     return max_index;
@@ -20,7 +21,7 @@ def get_sample_data (sample_ids, data_dir = "../data/"):
     cur, con = db.connect(data_dir)
     sample_data = []
     for sample_id in sample_ids:
-        class_statement = 'SELECT issue  FROM test_samples JOIN tests on test_samples.test_id = tests.test_id WHERE sample_id = %s;' % str(sample_id)
+        class_statement = 'SELECT issue > 0 FROM test_samples JOIN tests ON test_samples.test_id = tests.test_id WHERE sample_id = %s;' % str(sample_id)
         cur.execute(class_statement)
         sample_class = cur.fetchone()[0]
         sample_statement = 'SELECT freq, x, y, z FROM samples WHERE sample_id = %s;' % str(sample_id)
@@ -34,3 +35,40 @@ def get_sample_data (sample_ids, data_dir = "../data/"):
         sample_data.append((sample_class, data))
     db.disconnect()
     return sample_data
+
+def get_sample_indices_by_issue (data_dir, issue="> -1"):
+    cur, con = db.connect(data_dir)
+    select_statement = 'SELECT sample_id FROM test_samples where issue %s;' % issue 
+    cur.execute(select_statement)
+    sample_ids = []
+    for row in cur.fetchall():
+        sample_ids.append(row[0])
+    db.disconnect()
+    return sample_ids;
+
+# Returns a tuple of lists of length folds 
+# Each contains 1/folds of sample IDs for test and train
+def get_sample_indices_for_crossvalidation (folds, data_dir = "../data/"): 
+    number_of_samples = get_number_of_samples(data_dir) 
+    fold_size = number_of_samples / folds
+
+    class_0_sample_ids = get_sample_indices_by_issue(data_dir, "= 0")
+    class_1_sample_ids = get_sample_indices_by_issue(data_dir, "!= 0")
+
+    class_0_fold_size = len(class_0_sample_ids) / folds
+    class_1_fold_size = len(class_1_sample_ids) / folds
+
+    shuffle (class_0_sample_ids)
+    shuffle (class_1_sample_ids)
+
+    fold_ids = []
+
+    for i in range(folds):
+        fold_test_ids = class_0_sample_ids[i*class_0_fold_size : (i+1) * class_0_fold_size]
+        fold_train_ids = [ i for i in class_0_sample_ids if i not in fold_test_ids]
+        # We use class_0_fold_size here so that we're drawing the same amount from each test sset
+        fold_test_ids.append (class_1_sample_ids[i*class_1_fold_size : (i+1) * class_0_fold_size])
+        fold_train_ids.append([ i for i in class_1_sample_ids if i not in fold_test_ids]
+        fold_ids.append((fold_train_ids, fold_test_ids))
+
+    return fold_ids
