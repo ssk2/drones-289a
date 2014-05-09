@@ -38,7 +38,7 @@ def get_sample_data (sample_ids, data_dir = "../data/"):
 
 def get_sample_indices_by_issue (data_dir, issue="> -1"):
     cur, con = db.connect(data_dir)
-    select_statement = 'SELECT sample_id FROM test_samples where issue %s;' % issue 
+    select_statement = 'SELECT sample_id FROM test_samples JOIN tests ON test_samples.test_id = tests.test_id WHERE tests.issue %s GROUP BY sample_id;' % issue 
     cur.execute(select_statement)
     sample_ids = []
     for row in cur.fetchall():
@@ -68,5 +68,4 @@ def get_sample_indices_for_crossvalidation (folds, data_dir = "../data/"):
         fold_test_ids.append (class_1_sample_ids[i*class_1_fold_size : (i+1) * class_0_fold_size])
         fold_train_ids.append([ i for i in class_1_sample_ids if i not in fold_test_ids])
         fold_ids.append((fold_train_ids, fold_test_ids))
-
     return fold_ids
