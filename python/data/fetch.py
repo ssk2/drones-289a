@@ -48,7 +48,7 @@ def get_sample_data (sample_ids, data_dir = "../data/"):
             row_index += 1
         sample_data.append((sample_class, sample_pulse_width, data))
     db.disconnect()
-    return sorted(sample_data, key=lambda sample: str(sample[0]) + str(sample[1]))
+    return sample_data
 
 def get_sample_indices_by_issue (data_dir, issue="> -1"):
     cur, con = db.connect(data_dir)
