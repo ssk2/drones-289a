@@ -17,6 +17,18 @@ def get_sample_indices (training_samples, data_dir = "../data/"):
     test_indices = [ i for i in range(number_of_samples) if i not in training_indices ]
     return (training_indices, test_indices)
 
+
+def get_sample_indices_filtered(pulse_width='%', issue='%', loaded='%', data_dir = "../data/"):
+    cur, con = db.connect(data_dir)
+    sample_id_statement = 'SELECT sample_id FROM test_samples JOIN tests ON test_samples.test_id = tests.test_id WHERE pulse_width LIKE "{0}" AND issue LIKE "{1}" AND unloaded LIKE "{2}"'.format(pulse_width, issue, loaded)
+    cur.execute(sample_id_statement)
+    rows = cur.fetchall()
+    sample_ids = []
+    for row in rows:
+        sample_ids.append(row[0])
+    db.disconnect()
+    return sample_ids
+
 def get_sample_data (sample_ids, data_dir = "../data/"):
     cur, con = db.connect(data_dir)
     sample_data = []
