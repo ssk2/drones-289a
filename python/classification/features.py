@@ -76,7 +76,7 @@ def generate_feature_vectors(dataset, data_types, histbins, topfreq):
         trainlabels.append(dataset[i][0])
         fullfeaturevector = []
         for j in data_types:
-            vect = feature_vector(dataset[i][1], j, histbins, topfreq)
+            vect = feature_vector(dataset[i][2], j, histbins, topfreq)
             fullfeaturevector = numpy.concatenate((fullfeaturevector, vect))
         trainset.append(fullfeaturevector)
     return (trainset, trainlabels)
