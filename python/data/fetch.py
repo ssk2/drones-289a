@@ -1,6 +1,6 @@
 import sqlite3 as lite
 import data.database as db
-from random import shuffle
+import random as rnd
 import numpy as np
 
 def get_number_of_samples (data_dir):
@@ -36,7 +36,7 @@ def get_sample_data (sample_ids, data_dir = "../data/"):
             row_index += 1
         sample_data.append((sample_class, sample_pulse_width, data))
     db.disconnect()
-    return sorted(sample_data, key=lambda class_pulse_width: str(sample_class) + str(sample_pulse_width))
+    return sorted(sample_data, key=lambda sample: str(sample[0]) + str(sample[1]))
 
 def get_sample_indices_by_issue (data_dir, issue="> -1"):
     cur, con = db.connect(data_dir)
@@ -58,8 +58,8 @@ def get_sample_indices_for_crossvalidation (folds, data_dir = "../data/"):
     class_0_fold_size = len(class_0_sample_ids) / folds
     class_1_fold_size = len(class_1_sample_ids) / folds
 
-    shuffle (class_0_sample_ids)
-    shuffle (class_1_sample_ids)
+    rnd.shuffle (class_0_sample_ids)
+    rnd.shuffle (class_1_sample_ids)
 
     fold_ids = []
 
