@@ -7,11 +7,13 @@ import numpy
 import operator
 import random
 import matplotlib.pyplot as plt
+import math
+
 
 def histogram(data, data_type, bins):
     A = data[:,data_type]
     binlength = int(math.floor(len(data)/bins))
-    binned_data = zeros(bins)
+    binned_data = numpy.zeros(bins)
     for i in range(0, bins):
         summ = 0
         for j in range(0,binlength):
