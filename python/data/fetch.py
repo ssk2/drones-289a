@@ -46,8 +46,6 @@ def get_sample_indices_by_issue (data_dir, issue="> -1"):
     db.disconnect()
     return sample_ids;
 
-# Returns a tuple of lists of length folds 
-# Each contains 1/folds of sample IDs for test and train
 def get_sample_indices_for_crossvalidation (folds, data_dir = "../data/"): 
     number_of_samples = get_number_of_samples(data_dir) 
     fold_size = number_of_samples / folds
@@ -68,7 +66,7 @@ def get_sample_indices_for_crossvalidation (folds, data_dir = "../data/"):
         fold_train_ids = [ i for i in class_0_sample_ids if i not in fold_test_ids]
         # We use class_0_fold_size here so that we're drawing the same amount from each test sset
         fold_test_ids.append (class_1_sample_ids[i*class_1_fold_size : (i+1) * class_0_fold_size])
-        fold_train_ids.append([ i for i in class_1_sample_ids if i not in fold_test_ids]
+        fold_train_ids.append([ i for i in class_1_sample_ids if i not in fold_test_ids])
         fold_ids.append((fold_train_ids, fold_test_ids))
 
     return fold_ids
