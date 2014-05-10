@@ -1,0 +1,24 @@
+Prior Work:
+People use FFTs for machine learning/classification of audio quite regularly. E.g. music tracks, gunshots:
++ http://cs229.stanford.edu/proj2011/HaggbladeHongKao-MusicGenreClassification.pdf
++ 
+
+Dataset:
+10 samples from each of 35 tests. The tests vary the motor pulse width (this essentially affects how much power is supplied to the motor) from 900 microseconds to 2300 microseconds.  
+
+Each samples is 1 second's worth of magnitude of acceleration in the x, y and z directions collected from the accelerometer at a rate of 1 KHz (i.e. each sample contains 1000 points). This data is then translated from the time domain into the frequency domain via a fast Fourier transform to produce a discrete Fourier transform which represents the distribution of frequencies for each sample in each dimension.
+
+Feature Vectors:
+We trialled a number of feature vectors common to analysis of FFTs:
++ A histogram of data that represents an approximation of the distribution.
++ Top freque ncies
++ Centroid (mean when normalised)
+
++ Number of peaks
++ Top frequencies in x,y,z
++ Top frequency - average
+
+Machine Learning Methods:
++ SVM
++ Neural Networks
++ K Nearest Neighbour
