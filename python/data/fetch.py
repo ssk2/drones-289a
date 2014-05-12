@@ -29,11 +29,15 @@ def get_sample_indices_filtered(pulse_width='%', issue='%', unloaded='%', data_d
     db.disconnect()
     return sample_ids
 
-def get_sample_data (sample_ids, data_dir = "../data/"):
+def get_sample_data (sample_ids, multiclass = 'false', data_dir = "../data/"):
     cur, con = db.connect(data_dir)
     sample_data = []
+    if multiclass is "false":
+        issue_statement = "> 0"
+    else:
+        issue_statement = ""
     for sample_id in sample_ids:
-        class_statement = 'SELECT issue > 0, pulse_width FROM test_samples JOIN tests ON test_samples.test_id = tests.test_id WHERE sample_id = %s;' % str(sample_id)
+        class_statement = 'SELECT issue %s, pulse_width FROM test_samples JOIN tests ON test_samples.test_id = tests.test_id WHERE sample_id = %s;' % (issue_statement, str(sample_id))
         cur.execute(class_statement)
         row = cur.fetchone();
         sample_class = row[0]
@@ -60,7 +64,7 @@ def get_sample_indices_by_issue (data_dir, issue="> -1"):
     db.disconnect()
     return sample_ids;
 
-def get_sample_indices_for_crossvalidation (folds, pulse_width='%', issue='%', unloaded='%', data_dir = "../data/"): 
+def get_sample_indices_for_crossvalidation (folds, multiclass="false", pulse_width='%', issue='%', unloaded='%', data_dir = "../data/"): 
     
     sample_ids = get_sample_indices_filtered(pulse_width, issue, unloaded)
     number_of_samples = len(sample_ids)
