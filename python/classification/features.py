@@ -1,19 +1,13 @@
-
-# coding: utf-8
-
-# In[ ]:
-
 import numpy
 import operator
 import random
 import matplotlib.pyplot as plt
 import math
 
-
 def histogram(data, data_type, bins):
     A = data[:,data_type]
     binlength = int(math.floor(len(data)/bins))
-    binned_data = numpy.zeros(bins)
+    binned_data = zeros(bins)
     for i in range(0, bins):
         summ = 0
         for j in range(0,binlength):
@@ -33,6 +27,15 @@ def data_mean(data, data_type):
     A_mean = numpy.mean(A_norm)
     return [A_mean]
 
+def std(data):
+    sigma = 0
+    meann = numpy.mean(data)
+    for i in range(0, len(data)):
+        sigma = sigma + (data[i]-meann)*(data[i]-meann)
+    sigma = math.sqrt(sigma/len(data))
+    return sigma
+
+
 def peak_ratio(data, data_type):
     A = data[:,data_type]
     A_norm = A*1.0/sum(A)
@@ -41,6 +44,17 @@ def peak_ratio(data, data_type):
     if mean_magnitude <= 0:
         return -1
     return peak_magnitude/mean_magnitude
+
+def number_of_top_peaks(data, data_type):
+    A = data[:,data_type]
+    A_norm = A*1.0/sum(A)
+    num_peaks = 0
+    sigma = std(A_norm)
+    mean = numpy.mean(A_norm)
+    for i in range(0, len(A_norm)):
+        if A_norm[i] > mean + sigma*3:
+            num_peaks = num_peaks + 1
+    return [num_peaks]
 
 def centroid(data, data_type):
     freq = data[:,0]
@@ -54,12 +68,24 @@ def centroid(data, data_type):
         summ = summ + A_norm[i]
     return [-1]
 
-def feature_vector(data, data_type, hist_bins, top_freqs):
-    hist_vect = histogram(data, data_type, hist_bins)
-    freq_vect = top_frequencies(data, data_type, top_freqs)
-    cent_vect = centroid(data, data_type)
-    ratio_vect = peak_ratio(data, data_type)
-    return numpy.concatenate((freq_vect, cent_vect, ratio_vect))
+def feature_vector(data, data_type, hist_bins, top_freqs, centroid_bool, ratio_bool, peaks_bool):
+    fv = []
+    if(hist_bins > 0):
+        hist_vect = histogram(data, data_type, hist_bins)
+        fv = numpy.concatenate((fv, hist_vect))
+    if(top_freqs > 0):
+        freq_vect = top_frequencies(data, data_type, top_freqs)
+        fv = numpy.concatenate((fv, freq_vect))
+    if(centroid_bool > 0):
+        cent_vect = centroid(data, data_type)
+        fv = numpy.concatenate((fv, cent_vect))
+    if(ratio_bool > 0):
+        ratio_vect = peak_ratio(data, data_type)
+        fv = numpy.concatenate((fv, ratio_vect))
+    if(peaks_bool > 0):
+        num_peaks_vect = number_of_top_peaks(data, data_type)
+        fv = numpy.concatenate((fv, num_peaks_vect))
+    return fv
 
 def normalize_data(data, data_type):
     A = data[:,data_type]
@@ -67,7 +93,7 @@ def normalize_data(data, data_type):
     data[:,data_type] = A_norm
     return data
 
-def generate_feature_vectors(dataset, data_types, histbins, topfreq):
+def generate_feature_vectors(dataset, data_types, histbins, topfreq, centroid_bool, ratio_bool, peaks_bool):
     trainlabels = []
     trainset = []
     samplesize = len(dataset)
@@ -76,8 +102,7 @@ def generate_feature_vectors(dataset, data_types, histbins, topfreq):
         trainlabels.append(dataset[i][0])
         fullfeaturevector = []
         for j in data_types:
-            vect = feature_vector(dataset[i][2], j, histbins, topfreq)
+            vect = feature_vector(dataset[i][2], j, histbins, topfreq, centroid_bool, ratio_bool, peaks_bool)
             fullfeaturevector = numpy.concatenate((fullfeaturevector, vect))
         trainset.append(fullfeaturevector)
     return (trainset, trainlabels)
-
