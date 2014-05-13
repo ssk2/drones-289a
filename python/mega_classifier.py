@@ -3,7 +3,7 @@ from data import fetch
 from data import load
 from classification import features
 from numpy import mean
-from sklearn import svm, neighbors, tree, ensemble
+from sklearn import svm, neighbors, tree, ensemble, mixture
 
 
 # cross validation properties
@@ -90,14 +90,22 @@ xyz_set = [1,2,3]
 # clf = tree.DecisionTreeClassifier()
 # fit_and_predict(clf, "Decision Tree", cv_sets)
 
+
+### GMM : http://scikit-learn.org/stable/auto_examples/mixture/plot_gmm_classifier.html
+# n_components=n_classes
+# ,covariance_type=covar_type, init_params='wc',
+
+# clf = mixture.GMM(n_iter=20)
+# fit_and_predict(clf, "GMM", cv_sets)
+
 ### Ensemble Methods : http://scikit-learn.org/stable/modules/ensemble.html
 # try different n_estimators
-clf = ensemble.RandomForestClassifier(n_estimators = 10)
-fit_and_predict(clf, "Random Forest", cv_sets)
+# clf = ensemble.RandomForestClassifier(n_estimators = 10)
+# fit_and_predict(clf, "Random Forest", cv_sets)
 
 # Adaboost
-clf = ensemble.AdaBoostClassifier(n_estimators=10)
-fit_and_predict(clf, "AdaBoost", cv_sets)
+# clf = ensemble.AdaBoostClassifier(n_estimators=10)
+# fit_and_predict(clf, "AdaBoost", cv_sets)
 
 ### SVM : http://scikit-learn.org/stable/modules/svm.html#classification 
 
