@@ -97,7 +97,6 @@ def generate_feature_vectors(dataset, data_types, histbins, topfreq, centroid_bo
     trainlabels = []
     trainset = []
     samplesize = len(dataset)
-    num_types = len(data_types)
     for i in range(0,samplesize):
         trainlabels.append(dataset[i][0])
         fullfeaturevector = []
