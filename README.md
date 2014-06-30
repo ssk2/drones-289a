@@ -22,3 +22,9 @@ Data
 Intial data used to develop our approach was collected using accelerometers attached to quadrotor arms. More details are available in a technical report on the UC Berkeley [CPCC][cpcc] group's website.
 
 [cpcc]: http://cpcc.berkeley.edu
+
+Writeup
+-------
+The final project writeup containing our results is available online [here][report].
+
+[report]: http://pub.geekonabicycle.co.uk/cs289a/report.pdf
